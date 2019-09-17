@@ -25,9 +25,15 @@ RUN apt install -y --no-install-recommends \
 
 RUN apt install -y --no-install-recommends \
     feh \
+    compton \
     xsettingsd \
     aptitude \
-    nano
+    nano \
+    dmenu \
+    less \
+    yabar \
+    fonts-mononoki \
+    sudo
 
 # noVNC setup
 WORKDIR /usr/share/
@@ -41,17 +47,25 @@ COPY supervisord.conf /etc/
 
 EXPOSE 8083
 
-RUN useradd -m user
-WORKDIR /home/user
+RUN useradd -m andrei
+RUN usermod -d /home/andrei andrei
+# ENV USER andrei
+WORKDIR /home/andrei/
 
 ENV SHELL=/bin/bash
 
-RUN mkdir -p /root/.config/bspwm/
-COPY bspwmrc /root/.config/bspwm/
-COPY sxhkdrc /root/.config/sxhkd/
-COPY wallpaper.png /root/
-COPY .Xresources /root/
-COPY .xsettingsd /root/
-RUN chmod +x /root/.config/bspwm/bspwmrc
+RUN mkdir -p /home/andrei/.config/bspwm/
+COPY bspwmrc /home/andrei/.config/bspwm/
+COPY sxhkdrc /home/andrei/.config/sxhkd/
+COPY wallpaper.png /home/andrei/
+COPY .Xresources /home/andrei/
+COPY .xsettingsd /home/andrei/
+COPY compton.conf /home/andrei/.config/
+COPY yabar.conf /home/andrei/.config/yabar/
+COPY xstartup /home/andrei/.vnc/
+RUN chmod +x /home/andrei/.config/bspwm/bspwmrc
+RUN chown -R andrei:andrei /home/andrei/
+
+USER andrei
 
 CMD ["/usr/bin/supervisord"]
